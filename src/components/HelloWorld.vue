@@ -1,57 +1,97 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
-  </div>
+    <div class="hello">
+        <nav>Hello, {{ msg }}</nav>
+        <section>
+            <h3>last BIG transactions on watched wallets</h3>
+            <ol>
+                <li v-for="item in transactions">
+                    ${{item.amount}} from {{item.address}}
+                </li>
+                <li>$25 from RY23432423423</li>
+            </ol>
+            <button @click="getUpdates">update data</button>
+        </section>
+        <section>
+
+            <label for="">Address for watching
+                <input v-model.trim="newaddr" placeholder="E2035323223523" type="text"></label>
+            <br>
+            <label>name: <input v-model.trim="newname" placeholder="Whale pink" type="text"></label>
+            <button @click="addAddr" v-if="newaddr">Add</button>
+        </section>
+        <section>
+            <ol>
+                <li v-for="item in wallets" :key="item.address">
+                    {{item.address}}
+                    <button>Stop watching</button>
+                </li>
+            </ol>
+        </section>
+
+    </div>
 </template>
 
 <script>
-export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
-}
+    export default {
+        name: 'HelloWorld',
+        props: {
+            msg: String
+        },
+        data: function () {
+            return {
+                clientid: 123,
+                wallets: [{address: 'EA333242342'}, {address: "TE435435435"}],
+                transactions: [{address:'RT5435435345',amount:'1000'},],
+                newaddr: null,
+                newname: null,
+            }
+        },
+        methods: {
+            addAddr: function () {
+                this.wallets.push({address: this.newaddr, name: this.newname});
+                this.newaddr = null;
+                this.newname = null;
+            },
+            getUpdates: function () {
+
+                fetch('https://api.kanye.rest/')
+
+                    .then(response => response.json())
+                    .then(json => {
+                            let amount = Math.floor(Math.random() * (1000)) + 1;
+                            if (amount > 800) {
+                                console.log('new money on ' + json.id + ' amount:' + amount);
+                                this.transactions.push({address:json.id,amount:''+amount});
+                            }
+                        }
+                    );
+            }
+        },
+        created: function () {
+
+            setInterval(() => {
+                this.getUpdates();
+            }, 800)
+        }
+    }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
+    h3 {
+        margin: 15px 0 0;
+    }
+
+    ul {
+        padding: 0;
+    }
+
+    li {
+        display: block;
+        margin: 0 10px;
+    }
+
+    a {
+        color: #42b983;
+    }
 </style>
