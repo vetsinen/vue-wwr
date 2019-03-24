@@ -71,7 +71,7 @@
 
             setInterval(() => {
                 this.getUpdates();
-            }, 800)
+            }, 8000)
         }
     }
 </script>
